@@ -86,7 +86,7 @@ if(isset($_POST["logout"])) {
                 <th scope="col" width="10%">Action</th>
             </tr>
             </thead>
-            <?php $i = 1 ?>
+            <?php $i = 1 + $awalData ?>
             <?php foreach($handphones as $row) : ?>
             <tbody>
                 <tr>
