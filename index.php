@@ -8,8 +8,15 @@ if(!isset($_SESSION["login"])) {
     header("Location: " . $url);
     exit;
 }
-// panggil function query
-$handphones = query("SELECT * FROM handphones");
+// pagination
+$jumlahDataPerHalaman = 3;
+$jumlahData = count(query("SELECT * FROM users"));
+$jumlahHalaman = ceil($jumlahData / $jumlahDataPerHalaman);
+// mengetahui halaman yang sedang dilihat
+$halamanAktif = (isset($_GET["halaman"])) ? $_GET["halaman"] : 1;
+$awalData = ($jumlahDataPerHalaman * $halamanAktif) - $jumlahDataPerHalaman;
+
+$handphones = query("SELECT * FROM handphones LIMIT $awalData, $jumlahDataPerHalaman");
 // jika tombol cari diklik
 if(isset($_POST["cari"])) {
     // kirim keyword ke function searchData sebagai parameter
@@ -61,7 +68,7 @@ if(isset($_POST["logout"])) {
 
     <!-- tambah data -->
     <div class="tambah-data">
-        <a href="../crud-dasar/add-data/index.php" class="bg-primary text-white fw-bold"><i class="bi bi-plus fw-bolder text-white"></i>Tambah Data</a>
+        <a href="../crud-dasar/add-data/index.php" class="bg-success text-white fw-bold"><i class="bi bi-plus fw-bolder text-white"></i>Tambah Data</a>
     </div>
     <!-- akhir tambah data -->
     
@@ -102,6 +109,34 @@ if(isset($_POST["logout"])) {
         </table>
     </div>
     <!-- Table data end -->
+
+    <!-- Pagination -->
+    <nav aria-label="...">
+        <ul class="pagination justify-content-end">
+            <?php if($halamanAktif > 1) : ?>
+                <li class="page-item">
+                    <a class="page-link pagination" href="?halaman=<?= $halamanAktif - 1 ?>">Previous</a>
+                </li>
+            <?php endif; ?>
+            <?php for($i = 1; $i <= $jumlahHalaman; $i++) : ?>
+                <?php if($i == $halamanAktif) : ?>
+                <li class="page-item">
+                    <a class="page-link pagination bg-primary text-white" href="?halaman=<?= $i ?>"><?= $i ?></a>
+                </li>
+                <?php else : ?>
+                    <li class="page-item">
+                        <a class="page-link pagination" href="?halaman=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                <?php endif; ?>
+            <?php endfor; ?>
+            <?php if($halamanAktif < $jumlahHalaman) : ?>
+                <li class="page-item">
+                    <a class="page-link pagination" href="?halaman=<?= $halamanAktif + 1 ?>">Next</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+    <!-- Pagination end -->
 
     <!-- Modal Logout-->
     <div class="modal fade" id="logoutModal" tabindex="-1">
